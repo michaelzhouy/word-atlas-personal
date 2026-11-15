@@ -4,15 +4,15 @@ import { useAtlas } from "../atlas/context";
 import { store } from "../store/store";
 
 const LEVELS = [
-  ["A2", "基础", "日常词还不太稳"],
-  ["B1", "进阶", "目标 5.5 – 6 分"],
-  ["B2", "中高", "目标 6.5 – 7 分"],
-  ["C1", "高级", "冲刺 7.5 分以上"],
+  ["A1", "从头开始", "先把常用词记扎实"],
+  ["A2", "有一点基础", "日常词还不太稳"],
+  ["B1", "继续进阶", "能读懂简单文章"],
+  ["B2", "挑战难一点", "想拓展阅读词汇"],
 ];
 
 export function Onboarding() {
   const atlas = useAtlas();
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState(0);
   const [goal, setGoal] = useState(10);
   const finish = () => store.settings({ onboarded: true, startLevel: atlas.cefr.indexOf(LEVELS[level][0]), dailyNew: goal });
   return (
@@ -20,11 +20,11 @@ export function Onboarding() {
       <div className="onboard-card">
         <img className="onboard-art" src={`${import.meta.env.BASE_URL}brand/hero.webp`} alt="" />
         <div className="onboard-body">
-          <p className="eyebrow">欢迎来到词光</p>
+          <p className="eyebrow">拾词 · 我的英语学习本</p>
           <h1 className="display">
-            {atlas.count.toLocaleString()} 颗星，
+            每天十个词，
             <br />
-            等你一颗颗点亮。
+            慢慢变成自己的。
           </h1>
           <fieldset>
             <legend>你从哪里出发？</legend>
@@ -51,7 +51,7 @@ export function Onboarding() {
           <button className="btn btn-primary btn-xl" onClick={finish}>
             出发 <ArrowRight size={20} />
           </button>
-          <p className="muted">不用注册。进度只留在这台设备上，随时可以在「我的」里修改。</p>
+          <p className="muted">{atlas.count.toLocaleString()} 个英语词，配插画、例句和发音。进度留在本机，请在「我的」定期导出备份。目标和难度随时能改。</p>
         </div>
       </div>
     </div>

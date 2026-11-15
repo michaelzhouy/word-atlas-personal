@@ -54,6 +54,7 @@ export async function loadOpenAtlas(): Promise<Atlas> {
 
   return {
     id: idx.id,
+    language: "en",
     name: idx.name,
     kind: "open",
     count: idx.count,
@@ -149,6 +150,7 @@ export async function loadPrivateAtlas(open: Atlas | null): Promise<Atlas | null
   const pick = (ref: WordRef | Entry) => entries.get(ref.id)?.media;
   return {
     id: cat.id,
+    language: "en",
     name: cat.name,
     kind: "private",
     count: words.length,

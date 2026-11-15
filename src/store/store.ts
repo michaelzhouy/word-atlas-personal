@@ -67,15 +67,15 @@ export const defaultSettings: Settings = {
   autoplay: true,
   dailyNew: 10,
   retention: 0.9,
-  theme: "dark",
-  sfx: true,
+  theme: "light",
+  sfx: false,
   spell: true,
   startLevel: 0,
   onboarded: false,
   dataset: "open",
-  ambience: "stars",
+  ambience: "off",
   ambienceVolume: 0.45,
-  splash: true,
+  splash: false,
 };
 
 export const emptyProgress = (datasetId: string): Progress => ({
@@ -92,8 +92,8 @@ export const emptyProgress = (datasetId: string): Progress => ({
 export const dayKey = (d = new Date()) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
-const SETTINGS_KEY = "word-atlas:settings";
-const progressKey = (id: string) => `word-atlas:v2:${id}`;
+const SETTINGS_KEY = "shici:settings";
+const progressKey = (id: string) => `shici:v2:${id}`;
 
 function read<T>(key: string): T | null {
   try {
@@ -303,7 +303,7 @@ export function importBackup(text: string): { ok: true; cards: number } | { ok: 
     return { ok: false, error: "文件不是有效的 JSON。" };
   }
   if (!isObj(data) || data.app !== "word-atlas" || data.version !== 2 || !isObj(data.progress))
-    return { ok: false, error: "这不是词光的学习备份。" };
+    return { ok: false, error: "这不是拾词 / Word Atlas 的学习备份。" };
   const id = state.progress.datasetId;
   if (data.progress.datasetId !== id) return { ok: false, error: "备份来自另一个词库，请先切换到对应词库。" };
   const progress = sanitizeProgress({ ...data.progress, session: null }, id);

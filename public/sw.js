@@ -1,14 +1,37 @@
-/* Word Atlas offline cache: app shell network-first, everything else cache-first. */
-const VERSION = "atlas-v1";
-const SHELL = `${VERSION}-shell`;
-const MEDIA = `${VERSION}-media`;
+/* Each Pages application owns only its scoped caches. Vocabulary media is cached on demand. */
+const BUILD = "__BUILD_VERSION__";
+const PRECACHE = "__PRECACHE_ASSETS__";
+const PREFIX = `shici:${self.registration.scope}:`;
+const SHELL = `${PREFIX}${BUILD}:shell`;
+// Keep visited vocabulary across app updates; change content-v1 if its schema changes.
+const CONTENT = `${PREFIX}content-v1`;
+const scope = new URL(self.registration.scope);
+const shellURL = new URL("index.html", scope).href;
 
-self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(SHELL)
+      .then((cache) => cache.addAll(PRECACHE))
+      .then(() => self.skipWaiting()),
+  );
+});
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => !k.startsWith(VERSION)).map((k) => caches.delete(k))))
+      .then((keys) =>
+        Promise.all(
+          keys
+            .filter(
+              (key) =>
+                key.startsWith(PREFIX) &&
+                key !== SHELL &&
+                key.endsWith(":shell"),
+            )
+            .map((key) => caches.delete(key)),
+        ),
+      )
       .then(() => self.clients.claim()),
   );
 });
@@ -16,38 +39,87 @@ self.addEventListener("activate", (event) => {
 async function trim(name, max) {
   const cache = await caches.open(name);
   const keys = await cache.keys();
-  for (let i = 0; i < keys.length - max; i++) await cache.delete(keys[i]);
+  await Promise.all(
+    keys
+      .slice(0, Math.max(0, keys.length - max))
+      .map((key) => cache.delete(key)),
+  );
+}
+
+async function ranged(response, range) {
+  if (!range || response.status !== 200) return response;
+  const body = await response.arrayBuffer();
+  const size = body.byteLength;
+  const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+  const start = match?.[1]
+    ? Number(match[1])
+    : match?.[2]
+      ? Math.max(0, size - Number(match[2]))
+      : NaN;
+  const end =
+    match?.[1] && match?.[2] ? Math.min(Number(match[2]), size - 1) : size - 1;
+  if (
+    !match ||
+    !Number.isSafeInteger(start) ||
+    !Number.isSafeInteger(end) ||
+    start > end ||
+    start >= size
+  )
+    return new Response(null, {
+      status: 416,
+      headers: { "Content-Range": `bytes */${size}` },
+    });
+  const headers = new Headers(response.headers);
+  headers.set("Content-Range", `bytes ${start}-${end}/${size}`);
+  headers.set("Content-Length", String(end - start + 1));
+  headers.set("Accept-Ranges", "bytes");
+  return new Response(body.slice(start, end + 1), { status: 206, headers });
 }
 
 self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  if (req.method !== "GET" || req.headers.has("range")) return;
-  const url = new URL(req.url);
-  if (url.origin !== location.origin) return;
-  const isShell = req.mode === "navigate" || url.pathname.endsWith("/index.json");
-  if (isShell) {
-    event.respondWith(
-      fetch(req)
-        .then((res) => {
-          if (res.ok) caches.open(SHELL).then((c) => c.put(req, res.clone()));
-          return res;
-        })
-        .catch(() => caches.match(req).then((hit) => hit || caches.match(new URL("./", self.registration.scope).href))),
-    );
+  const request = event.request;
+  const url = new URL(request.url);
+  if (
+    request.method !== "GET" ||
+    url.origin !== scope.origin ||
+    !url.pathname.startsWith(scope.pathname)
+  )
     return;
-  }
-  event.respondWith(
-    caches.match(req).then(
-      (hit) =>
-        hit ||
-        fetch(req).then((res) => {
-          if (res.ok && res.type === "basic") {
-            const copy = res.clone();
-            const name = /\/atlas\/(img|thumb|audio)\//.test(url.pathname) ? MEDIA : SHELL;
-            caches.open(name).then((c) => c.put(req, copy)).then(() => name === MEDIA && trim(MEDIA, 1500));
-          }
-          return res;
-        }),
-    ),
-  );
+  const isContent = /\/atlas\/(entries|img|thumb|audio)\//.test(url.pathname);
+  const isShell =
+    request.mode === "navigate" || url.pathname.endsWith("/atlas/index.json");
+  // Register persistence while the fetch event is active, so the worker stays alive through the write.
+  let persist = Promise.resolve();
+  const response = (async () => {
+    const cache = await caches.open(isContent ? CONTENT : SHELL);
+    const headers = new Headers(request.headers);
+    const range = headers.get("range");
+    headers.delete("range");
+    const full = new Request(request, { headers });
+    const hit = await cache.match(full);
+    if (!isShell && hit) return ranged(hit, range);
+    try {
+      const fresh = await fetch(full);
+      if (fresh.ok && fresh.status === 200 && fresh.type === "basic") {
+        const copy = fresh.clone();
+        persist = cache
+          .put(full, copy)
+          .then(() => isContent && trim(CONTENT, 1500))
+          .catch(() => {});
+      }
+      return ranged(fresh, range);
+    } catch {
+      if (hit) return ranged(hit, range);
+      if (request.mode === "navigate") {
+        const fallback = await cache.match(shellURL);
+        if (fallback) return fallback;
+      }
+      return new Response("此内容尚未缓存，请联网后再试。", {
+        status: 503,
+        headers: { "Content-Type": "text/plain; charset=utf-8" },
+      });
+    }
+  })();
+  event.respondWith(response);
+  event.waitUntil(response.then(() => persist));
 });

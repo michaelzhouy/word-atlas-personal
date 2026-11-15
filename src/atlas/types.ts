@@ -52,6 +52,8 @@ export interface WordRef {
 
 export interface Atlas {
   id: string;
+  /** Missing for legacy datasets; English is the default. */
+  language?: "en" | "de";
   name: string;
   kind: "open" | "private";
   count: number;

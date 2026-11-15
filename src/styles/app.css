@@ -4120,3 +4120,45 @@ a:hover .mark-needle,
 .streak-panel .mini-stats div:first-child dd {
   color: var(--ochre);
 }
+
+/* Personal learning notebook: quiet guidance and a practical phone entry. */
+.personal-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 14px;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+.personal-intro p { margin: 0; }
+.personal-intro .link { min-height: 36px; }
+.install-panel h4 {
+  margin: 18px 0;
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+.connection-state, .install-ready {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--sage-ink);
+  font-size: 12px;
+}
+.install-steps {
+  list-style: none;
+  padding: 0;
+  margin: 16px 0;
+  display: grid;
+  gap: 14px;
+}
+.install-steps li { display: grid; gap: 5px; }
+.install-steps b { font-size: 13px; }
+.install-steps span { color: var(--ink-2); font-size: 13px; line-height: 1.7; }
+.install-panel .muted { margin-bottom: 0; }
+@media (min-width: 760px) {
+  .onboard .choice-grid { grid-template-columns: 1fr 1fr; }
+}

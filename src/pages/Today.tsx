@@ -81,6 +81,10 @@ export function Today() {
           {now.getMonth() + 1}月{now.getDate()}日 · 星期{"日一二三四五六"[now.getDay()]}
         </p>
         <h1 className="display">{greeting(now.getHours())}，探索者。</h1>
+        <div className="personal-intro">
+          <p>我的英语学习本 · 每天 {settings.dailyNew} 个新词</p>
+          <button className="link" onClick={() => go({ page: "me" })}>添加到手机桌面 <ArrowRight size={14} /></button>
+        </div>
       </header>
 
       <section className={`journey ${total === 0 && !active ? "is-clear" : ""}`}>
@@ -321,7 +325,7 @@ function Topics() {
   return (
     <section className="topics-panel">
       <div className="panel-head">
-        <h3 className="eyebrow">按雅思话题探索</h3>
+        <h3 className="eyebrow">按生活话题探索</h3>
         <button className="link" onClick={() => go({ page: "atlas" })}>
           打开图鉴
         </button>

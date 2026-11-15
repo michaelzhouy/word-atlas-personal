@@ -3,26 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#0D1120" />
-    <meta name="twitter:title" content="词光 · 一词一画，点亮雅思" />
-    <meta name="twitter:image" content="https://0xlei.tech/words/brand/og-card.jpg" />
-    <title>词光 Word Atlas · 一词一画，点亮雅思</title>
-    <meta name="description" content="7,298 个雅思核心词，每个词一幅原创插画、两句原创例句和英美发音。学会一个，就点亮一颗星。免费、开源、无需注册。" />
+    <meta name="theme-color" content="#F6F1E7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="拾词" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="twitter:title" content="拾词 · 每天十个词，慢慢记住" />
+    <meta name="twitter:image" content="https://michaelzhouy.github.io/word-atlas-personal/icon-512.png" />
+    <title>拾词 · 我的英语学习本</title>
+    <meta name="description" content="给自己做的英语背词 App：插画词卡、发音、拼写和到期复习。每天十个词，进度保存在本机，可备份、可添加到手机桌面。" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="词光 · 一词一画，点亮雅思" />
-    <meta property="og:description" content="7,298 个雅思词，每个都有一幅画。学会一个，就点亮一颗星。免费、开源、无需注册。" />
-    <meta property="og:image" content="https://0xlei.tech/words/brand/og-card.jpg" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:title" content="拾词 · 我的英语学习本" />
+    <meta property="og:description" content="每天十个词，慢慢记住。插画词卡、发音、拼写和到期复习，无需注册。" />
+    <meta property="og:image" content="https://michaelzhouy.github.io/word-atlas-personal/icon-512.png" />
+    <meta name="twitter:card" content="summary" />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
     <link rel="apple-touch-icon" href="%BASE_URL%icon-512.png" />
     <link rel="manifest" href="%BASE_URL%manifest.webmanifest" />
     <link rel="preload" href="%BASE_URL%atlas/index.json" as="fetch" crossorigin="anonymous" />
     <script>
-      // Apply the saved theme (dark by default) before first paint.
+      // Apply the saved theme before first paint.
       (function () {
-        var t = "dark";
+        var t = "light";
         try {
-          var s = JSON.parse(localStorage.getItem("word-atlas:settings") || "{}");
+          var s = JSON.parse(localStorage.getItem("shici:settings") || "{}");
           if (s.theme) t = s.theme;
         } catch (e) {}
         if (t !== "system") document.documentElement.setAttribute("data-theme", t);

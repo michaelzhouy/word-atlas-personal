@@ -13,6 +13,7 @@ import { Onboarding } from "./pages/Onboarding";
 import { Practice } from "./pages/Practice";
 import { Today } from "./pages/Today";
 import { cue } from "./lib/sound";
+import { setAudioLanguage } from "./lib/audio";
 import { store, useStore } from "./store/store";
 import { EntryView } from "./ui/EntryView";
 import { AmbienceController, AmbiencePicker } from "./ui/Ambience";
@@ -63,6 +64,7 @@ export default function App() {
     const next = dataset === "private" && priv ? priv : open;
     if (next && next !== atlas) {
       store.useDataset(next.id);
+      setAudioLanguage(next.language ?? "en");
       setAtlas(next);
     }
   }, [dataset, open, priv, atlas]);
@@ -125,7 +127,7 @@ function Shell({ privateAvailable }: { privateAvailable: boolean }) {
     <div className={`app ${focus ? "is-focus" : ""}`}>
       {!focus && (
         <header className="topbar">
-          <a className="topbar-logo" href="#/" aria-label="词光 Word Atlas 首页">
+          <a className="topbar-logo" href="#/" aria-label="拾词首页">
             <Logo />
           </a>
           <nav className="topnav" aria-label="主导航">
@@ -165,7 +167,7 @@ function Shell({ privateAvailable }: { privateAvailable: boolean }) {
         <footer className="footer">
           <Logo compact />
           <p>
-            一词一画，点亮雅思 · 免费开源 ·{" "}
+            每天一点，慢慢记住 · 基于 Word Atlas ·{" "}
             <a href={REPO_URL} target="_blank" rel="noreferrer">
               GitHub
             </a>{" "}

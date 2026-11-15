@@ -3,8 +3,9 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 
+// Reuse the logged-in GitHub CLI without storing a token in config or source.
 const git = (args, options = {}) =>
-  execFileSync("git", args, { encoding: "utf8", ...options }).trim();
+  execFileSync("git", ["-c", "credential.helper=", "-c", "credential.helper=!gh auth git-credential", ...args], { encoding: "utf8", ...options }).trim();
 const root = git(["rev-parse", "--show-toplevel"]);
 process.chdir(root);
 const origin = git(["remote", "get-url", "origin"]);

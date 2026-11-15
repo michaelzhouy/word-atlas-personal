@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F6F1E7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="拾词" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="twitter:title" content="拾词 · 每天十个词，慢慢记住" />
+    <meta name="twitter:image" content="https://michaelzhouy.github.io/word-atlas-personal/icon-512.png" />
+    <title>拾词 · 我的英语学习本</title>
+    <meta name="description" content="给自己做的英语背词 App：插画词卡、发音、拼写和到期复习。每天十个词，进度保存在本机，可备份、可添加到手机桌面。" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="拾词 · 我的英语学习本" />
+    <meta property="og:description" content="每天十个词，慢慢记住。插画词卡、发音、拼写和到期复习，无需注册。" />
+    <meta property="og:image" content="https://michaelzhouy.github.io/word-atlas-personal/icon-512.png" />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" type="image/svg+xml" href="/word-atlas-personal/favicon.svg" />
+    <link rel="apple-touch-icon" href="/word-atlas-personal/icon-512.png" />
+    <link rel="manifest" href="/word-atlas-personal/manifest.webmanifest" />
+    <link rel="preload" href="/word-atlas-personal/atlas/index.json" as="fetch" crossorigin="anonymous" />
+    <script>
+      // Apply the saved theme before first paint.
+      (function () {
+        var t = "light";
+        try {
+          var s = JSON.parse(localStorage.getItem("shici:settings") || "{}");
+          if (s.theme) t = s.theme;
+        } catch (e) {}
+        if (t !== "system") document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
+    <script type="module" crossorigin src="/word-atlas-personal/assets/index-Bf2TfofM.js"></script>
+    <link rel="stylesheet" crossorigin href="/word-atlas-personal/assets/index-B1B5pXgr.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

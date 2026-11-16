@@ -1,6 +1,6 @@
 /* Each Pages application owns only its scoped caches. Vocabulary media is cached on demand. */
-const BUILD = "f8b8b7ddf5e9";
-const PRECACHE = ["./index.html","./manifest.webmanifest","./favicon.svg","./icon-192.png","./icon-512.png","./LICENSE.txt","./CONTENT_LICENSE.md","./FONT_LICENSE.txt","./atlas/index.json","./assets/fraunces-latin-ext-opsz-italic-CGbN9UgK.woff2","./assets/fraunces-latin-ext-opsz-normal-CJcjJNj7.woff2","./assets/fraunces-latin-opsz-italic-lSdLDfvT.woff2","./assets/fraunces-latin-opsz-normal-DihXLNYH.woff2","./assets/fraunces-vietnamese-opsz-italic-DxWqP7Ku.woff2","./assets/fraunces-vietnamese-opsz-normal-Czevyj-6.woff2","./assets/index-BiTHfj5S.css","./assets/index-i8iKHSWw.js"];
+const BUILD = "40e12f2230ed";
+const PRECACHE = ["./index.html","./manifest.webmanifest","./favicon.svg","./icon-192.png","./icon-512.png","./LICENSE.txt","./CONTENT_LICENSE.md","./FONT_LICENSE.txt","./atlas/index.json","./assets/fraunces-latin-ext-opsz-italic-CGbN9UgK.woff2","./assets/fraunces-latin-ext-opsz-normal-CJcjJNj7.woff2","./assets/fraunces-latin-opsz-italic-lSdLDfvT.woff2","./assets/fraunces-latin-opsz-normal-DihXLNYH.woff2","./assets/fraunces-vietnamese-opsz-italic-DxWqP7Ku.woff2","./assets/fraunces-vietnamese-opsz-normal-Czevyj-6.woff2","./assets/index-CI99mUfa.js","./assets/index-C_gvYhNI.css"];
 const PREFIX = `shici:${self.registration.scope}:`;
 const SHELL = `${PREFIX}${BUILD}:shell`;
 // Keep visited vocabulary across app updates; change content-v1 if its schema changes.

@@ -295,6 +295,7 @@ try {
   assert.deepEqual(p.notebooks, backup.progress.notebooks);
   assert.deepEqual(p.familiar, backup.progress.familiar);
   await showBook(bookId);
+  await page.locator(".notebook-manage > summary").click();
   page.once("dialog", (d) => d.accept());
   await page
     .getByRole("button", { name: "删除词本 旅行与阅读", exact: true })

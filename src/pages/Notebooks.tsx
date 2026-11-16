@@ -49,15 +49,12 @@ export function Notebooks({
     go({ page: "notebooks", book: book.id });
   };
   return (
-    <div className="page notebooks">
+    <div
+      className={`page notebooks ${current && !creating ? "has-detail" : ""} ${creating ? "is-creating" : ""} ${pending ? "has-pending" : ""}`}
+    >
       <header className="notebooks-head">
         <div>
-          <p className="eyebrow">我的词本 · MY WORDBOOKS</p>
-          <h1 className="display">
-            遇见的词，
-            <br />
-            收进自己的书。
-          </h1>
+          <h1 className="display">个人词本</h1>
           <p className="lede">
             一篇文章、一门课、一次旅行。把想记住的词，放在一起。
           </p>
@@ -70,10 +67,22 @@ export function Notebooks({
           <Plus size={18} /> 新建词本
         </button>
       </header>
+      {(current || creating) && (
+        <button
+          className="link notebook-back"
+          onClick={() => {
+            setCreating(false);
+            go({ page: "notebooks", add: route.add });
+          }}
+        >
+          <ChevronLeft size={18} /> 全部词本
+        </button>
+      )}
       {pending && (
         <div className="notebook-pending" role="status">
           <p>
-            把 <b lang="en">{pending.word}</b> 收进哪个词本？也可以新建一本。
+            把 <b lang={atlas.language ?? "en"}>{pending.word}</b>{" "}
+            收进哪个词本？也可以新建一本。
           </p>
           <button
             className="link"
@@ -185,21 +194,28 @@ export function Notebooks({
           />
         ) : (
           <section className="notebook-welcome panel">
-            <div className="notebook-cover" aria-hidden="true">
-              <span>拾 词</span>
-              <b>
-                Words
-                <br />
-                worth keeping.
-              </b>
-              <i>文章 · 课程 · 生活</i>
-            </div>
-            <h2>从你真正想学的词开始。</h2>
+            {!progress.notebooks.length && (
+              <div className="notebook-cover" aria-hidden="true">
+                <span>拾 词</span>
+                <b>
+                  Words
+                  <br />
+                  worth keeping.
+                </b>
+                <i>文章 · 课程 · 生活</i>
+              </div>
+            )}
+            <h2>
+              {progress.notebooks.length
+                ? "打开词本，继续收词。"
+                : "从你真正想学的词开始。"}
+            </h2>
             <p className="muted">
               粘贴英语单词或短语，自动匹配图鉴里的释义、插画与发音。收藏的词也能一键收进来。
             </p>
             <button className="btn btn-ghost" onClick={() => setCreating(true)}>
-              创建我的第一本 <ArrowRight size={18} />
+              {progress.notebooks.length ? "再建一本" : "创建我的第一本"}{" "}
+              <ArrowRight size={18} />
             </button>
           </section>
         )}
@@ -267,7 +283,6 @@ function NewNotebook({
         onDone(book.id);
       }}
     >
-      <p className="eyebrow">新建词本</p>
       <h2>给这次学习起个名字。</h2>
       <label className="notebook-field">
         词本名称
@@ -366,26 +381,6 @@ function NotebookDetail({
   };
   return (
     <section className="panel notebook-detail">
-      <div className="panel-head">
-        <p className="eyebrow">我的词本</p>
-        <button
-          className="icon-btn"
-          aria-label={`删除词本 ${book.name}`}
-          onClick={() => {
-            if (
-              !confirm(
-                `删除「${book.name}」？已学单词、收藏和复习计划会保留。${progress.activeNotebookId === book.id ? "今日新词来源将改为完整图鉴。" : ""}`,
-              )
-            )
-              return;
-            store.progress((p) => removeNotebook(p, book.id));
-            go({ page: "notebooks" });
-            toast("词本已删除，学习记录已保留");
-          }}
-        >
-          <Trash2 size={17} />
-        </button>
-      </div>
       <h2>{book.name}</h2>
       <p className="notebook-count">
         {words.length} 个词 <i> / </i> {fresh} 个未学 <i> / </i> {familiar}{" "}
@@ -406,6 +401,7 @@ function NotebookDetail({
           </>
         )}
       </button>
+      <p className="notebook-review-note">已学单词照常按时复习。</p>
       <details className="notebook-manage">
         <summary>添加单词 / 修改名称</summary>
         <form
@@ -473,6 +469,23 @@ function NotebookDetail({
             </button>
           </div>
         </form>
+        <button
+          className="link notebook-delete"
+          aria-label={`删除词本 ${book.name}`}
+          onClick={() => {
+            if (
+              !confirm(
+                `删除「${book.name}」？已学单词、收藏和复习计划会保留。${progress.activeNotebookId === book.id ? "今日新词来源将改为完整图鉴。" : ""}`,
+              )
+            )
+              return;
+            store.progress((p) => removeNotebook(p, book.id));
+            go({ page: "notebooks" });
+            toast("词本已删除，学习记录已保留");
+          }}
+        >
+          <Trash2 size={16} /> 删除词本
+        </button>
       </details>
       <div className="notebook-words-head">
         <h3 className="eyebrow">词本里的词</h3>
@@ -500,7 +513,7 @@ function NotebookDetail({
           return (
             <li key={w.id}>
               <button className="notebook-word" onClick={() => openWord(w.id)}>
-                <b lang="en">{w.word}</b>
+                <b lang={atlas.language ?? "en"}>{w.word}</b>
                 <span>{w.zh}</span>
                 <small className={known ? "is-familiar" : ""}>{status}</small>
               </button>

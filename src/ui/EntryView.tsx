@@ -18,6 +18,7 @@ import { Illustration } from "./Illustration";
 import { Speak } from "./Speak";
 import { shareWord } from "./share";
 import { go, openWord } from "../lib/router";
+import { WordIdentity } from "./WordIdentity";
 
 export function Highlight({ text, word }: { text: string; word: string }) {
   const parts = splitHighlight(text, word);
@@ -107,15 +108,6 @@ export function EntryView({
 
   return (
     <article className={`entry entry-${mode}`}>
-      <div className="entry-art">
-        <Illustration
-          src={atlas.img(entry)}
-          word={entry.w}
-          topic={topicIdx}
-          eager={eager}
-          alt={`${entry.w} 插画`}
-        />
-      </div>
       <div className="entry-body">
         <header className="entry-head">
           <div className="entry-tags">
@@ -153,45 +145,19 @@ export function EntryView({
             </div>
           )}
         </header>
-        {ref && (
-          <p className="specimen">
-            № {String(ref.order + 1).padStart(4, "0")}
-            <i />
-            Word Atlas
-          </p>
-        )}
-        <h2 className="headword" lang="en">
-          {entry.w}
-        </h2>
-        <Pronounce entry={entry} refw={ref ?? entry} />
-        {mode === "detail" && (
-          <div className="entry-personal-actions">
-            <button
-              className="link"
-              onClick={() => go({ page: "notebooks", add: entry.id })}
-            >
-              <BookPlus size={16} /> 收进词本
-            </button>
-            {!card && (
-              <button
-                className="link"
-                onClick={() =>
-                  store.progress((p) => setFamiliar(p, entry.id, !familiar))
-                }
-              >
-                {familiar ? (
-                  <>
-                    <RotateCcw size={15} /> 恢复新词学习
-                  </>
-                ) : (
-                  <>
-                    <Check size={16} /> 这个词已熟悉
-                  </>
-                )}
-              </button>
-            )}
+        <div className="entry-overview">
+          <WordIdentity entry={entry} language={atlas.language ?? "en"} />
+          <div className="entry-art">
+            <Illustration
+              src={atlas.img(entry)}
+              word={entry.w}
+              topic={topicIdx}
+              eager={eager}
+              alt={`${entry.w} 插画`}
+            />
           </div>
-        )}
+        </div>
+        <Pronounce entry={entry} refw={ref ?? entry} />
         <ol className="senses">
           {entry.senses.slice(0, 1).map((s, i) => (
             <li key={i}>
@@ -232,6 +198,35 @@ export function EntryView({
               ))}
             </ul>
           </section>
+        )}
+
+        {mode === "detail" && (
+          <div className="entry-personal-actions">
+            <button
+              className="btn btn-ghost"
+              onClick={() => go({ page: "notebooks", add: entry.id })}
+            >
+              <BookPlus size={16} /> 收进词本
+            </button>
+            {!card && (
+              <button
+                className="link"
+                onClick={() =>
+                  store.progress((p) => setFamiliar(p, entry.id, !familiar))
+                }
+              >
+                {familiar ? (
+                  <>
+                    <RotateCcw size={15} /> 恢复新词学习
+                  </>
+                ) : (
+                  <>
+                    <Check size={16} /> 这个词已熟悉
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         )}
 
         {(entry.senses.length > 1 ||

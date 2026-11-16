@@ -6,6 +6,7 @@ const url = (p: string) => `${BASE}/atlas/${p}`;
 
 interface IndexFile {
   id: string;
+  language?: Atlas["language"];
   name: string;
   count: number;
   examples: number;
@@ -54,7 +55,7 @@ export async function loadOpenAtlas(): Promise<Atlas> {
 
   return {
     id: idx.id,
-    language: "en",
+    language: idx.language ?? "en",
     name: idx.name,
     kind: "open",
     count: idx.count,

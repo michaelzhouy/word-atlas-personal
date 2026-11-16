@@ -57,9 +57,12 @@ npm test
 npm run check:atlas
 npm run check:app
 npm run check:personal
+npm run check:mobile
 ```
 
 浏览器检查需要正在运行的生产预览和 Chrome，或已通过 `npx playwright install chromium` 安装的 Chromium。可用 `APP_URL` 指定网址、`CHROME_PATH` 指定浏览器。检查只使用隔离的测试浏览器；截图与结果在 `output/verification/`，不会提交到 GitHub。
+
+手机界面规范见 [DESIGN.md](DESIGN.md)。`check:mobile` 检查 320/390/430px、横屏、桌面和深色模式，覆盖首屏学习入口、词本操作、词卡关闭与焦点、长德语词和 200% 字体。截图与结果保存在 `output/mobile-review/after/`，属于 Chromium 手机尺寸模拟，不是物理手机测试。
 
 ## 部署
 
@@ -74,6 +77,8 @@ npm run deploy:pages
 ## 以后加入德语
 
 当前只有英语词库。语音回退支持 `en-GB`、`en-US`、`de-DE`；词库可以声明语言，学习进度按词库 ID 隔离。
+
+词卡可选字段 `grammar.article`（`der` / `die` / `das`）与 `grammar.plural` 已预留展示位置；缺少时不显示空占位。索引可声明 `language: "de"`，默认仍为英语。这些字段只影响显示，不改变复习安排或答案判断。
 
 真正加入德语时，还要准备有授权的词库与录音，处理冠词、复数、变音字母、名词大小写、例句高亮和题型判断。应使用新的德语词库 ID，保留英语进度，并验证备份不会跨词库覆盖。
 

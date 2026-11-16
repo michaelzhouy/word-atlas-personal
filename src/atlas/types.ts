@@ -28,6 +28,8 @@ export interface Entry {
   tip: string;
   cefr: string;
   topic: string;
+  /** Optional noun forms, rendered without changing scheduling or answers. */
+  grammar?: { article?: "der" | "die" | "das"; plural?: string };
   /** Usage caution (register, offensiveness, spelling), shown with the entry. */
   note?: string;
   /** Media bit flags, see MEDIA. */

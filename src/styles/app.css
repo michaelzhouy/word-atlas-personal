@@ -10,7 +10,7 @@
   --card-2: #faf5ec;
   --ink: #1a2035;
   --ink-2: #434b65;
-  --ink-3: #7a7d8a;
+  --ink-3: #626777;
   --ink-4: #aba79f;
   --line: rgba(26, 32, 53, 0.1);
   --line-strong: rgba(26, 32, 53, 0.15);
@@ -18,11 +18,13 @@
   --terra-ink: #a8432a;
   --terra-soft: #f5ddd1;
   --ochre: #cb922c;
+  --ochre-ink: #8b6014;
   --ochre-soft: #f7e7c4;
   --sage: #6a8c63;
   --sage-ink: #4b6b45;
   --sage-soft: #dfe9d8;
   --sky: #5f88a8;
+  --sky-ink: #426680;
   --sky-soft: #dde8f0;
   --plum: #9a6283;
   --glow: rgba(255, 200, 110, 0.26);
@@ -42,6 +44,23 @@
   --top: 68px;
   --tab: 0px;
   --gutter: 20px;
+  /* Shared reading and touch scale, documented in DESIGN.md. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --type-caption: 0.75rem;
+  --type-label: 0.875rem;
+  --type-body: 1rem;
+  --type-section: 1.25rem;
+  --type-title: 1.5rem;
+  --type-word: 2.25rem;
+  --touch: 44px;
+  --action: 52px;
+  --control-radius: 12px;
   color-scheme: light;
 }
 
@@ -54,7 +73,7 @@
     --card-2: #19213a;
     --ink: #f2ebdd;
     --ink-2: #c8c1b3;
-    --ink-3: #8d8c94;
+    --ink-3: #a9a6ad;
     --ink-4: #5f6372;
     --line: rgba(242, 235, 221, 0.08);
     --line-strong: rgba(242, 235, 221, 0.14);
@@ -62,11 +81,13 @@
     --terra-ink: #f29a7b;
     --terra-soft: rgba(229, 124, 90, 0.16);
     --ochre: #e8b65a;
+    --ochre-ink: #e8b65a;
     --ochre-soft: rgba(232, 182, 90, 0.15);
     --sage: #97b88e;
     --sage-ink: #b5d1ac;
     --sage-soft: rgba(151, 184, 142, 0.15);
     --sky: #8fb2cc;
+    --sky-ink: #8fb2cc;
     --sky-soft: rgba(143, 178, 204, 0.15);
     --glow: rgba(232, 182, 90, 0.14);
     --mark: rgba(232, 182, 90, 0.28);
@@ -84,7 +105,7 @@
   --card-2: #19213a;
   --ink: #f2ebdd;
   --ink-2: #c8c1b3;
-  --ink-3: #8d8c94;
+  --ink-3: #a9a6ad;
   --ink-4: #5f6372;
   --line: rgba(242, 235, 221, 0.08);
   --line-strong: rgba(242, 235, 221, 0.14);
@@ -92,11 +113,13 @@
   --terra-ink: #f29a7b;
   --terra-soft: rgba(229, 124, 90, 0.16);
   --ochre: #e8b65a;
+  --ochre-ink: #e8b65a;
   --ochre-soft: rgba(232, 182, 90, 0.15);
   --sage: #97b88e;
   --sage-ink: #b5d1ac;
   --sage-soft: rgba(151, 184, 142, 0.15);
   --sky: #8fb2cc;
+  --sky-ink: #8fb2cc;
   --sky-soft: rgba(143, 178, 204, 0.15);
   --glow: rgba(232, 182, 90, 0.14);
   --mark: rgba(232, 182, 90, 0.28);
@@ -361,8 +384,8 @@ code {
   height: 20px;
 }
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: var(--touch);
+  height: var(--touch);
   border-radius: 999px;
   display: inline-grid;
   place-items: center;
@@ -1980,6 +2003,7 @@ code {
 }
 .filters {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   margin-bottom: 22px;
   position: relative;

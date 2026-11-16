@@ -67,9 +67,9 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
     try {
       const text = await f.text();
       if (
-        Object.keys(progress.cards).length &&
+        (Object.keys(progress.cards).length || progress.notebooks.length || progress.bookmarks.length || progress.familiar.length) &&
         !confirm(
-          "导入会替换当前词库的学习记录与设置。建议先导出当前备份，确定继续？",
+          "导入会替换当前的学习记录、词本、收藏、熟词标记与设置。旧版备份不包含词本。建议先导出当前备份，确定继续？",
         )
       )
         return;
@@ -131,6 +131,7 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
           <p className="muted">
             一格是一天，颜色越深，那天答得越多。「长期记住」指记忆稳定度超过 21
             天。
+            {progress.familiar.length > 0 && ` 另有 ${progress.familiar.length} 个自行标记的熟词，单独保存，不计入长期记住。`}
           </p>
         </section>
 
@@ -274,7 +275,7 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
         <section className="panel">
           <h3 className="eyebrow">学习备份</h3>
           <p className="muted">
-            学习记录保存在当前浏览器，不会自动同步到其他设备。换手机、换浏览器或清理浏览器数据前，请先导出备份；在新设备打开拾词后，再导入文件。备份包含学习记录与设置，不包含词库、插画或音频。
+            学习记录保存在当前浏览器，不会自动同步到其他设备。换手机、换浏览器或清理浏览器数据前，请先导出备份；在新设备打开拾词后，再导入文件。备份包含学习记录、个人词本、收藏、熟词标记与设置，不包含词库、插画或音频。也可导入旧版备份。
           </p>
           {saveError && (
             <p className="warn-text">
@@ -306,7 +307,7 @@ export function Me({ privateAvailable }: { privateAvailable: boolean }) {
               onClick={() => {
                 if (
                   confirm(
-                    "确定清空这个词库的全部学习记录？此操作无法撤销，建议先导出备份。",
+                    "确定清空答题、复习与打字记录？词本、收藏和熟词标记会保留。此操作无法撤销，建议先导出备份。",
                   )
                 ) {
                   resetProgress();

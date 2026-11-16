@@ -22,6 +22,7 @@ import {
   gradeFor,
   sessionStats,
 } from "../store/session";
+import { setFamiliar } from "../store/notebooks";
 import { Rating } from "../store/srs";
 import {
   store,
@@ -111,7 +112,7 @@ function Runner({ session }: { session: ActiveSession }) {
         </span>
         <AmbiencePicker />
       </header>
-      <main className="learn-stage" key={`${session.id}-${session.index}`}>
+      <main className="learn-stage" key={`${session.id}-${session.index}-${step.id}-${step.kind}`}>
         {step.kind === "intro" ? (
           <Intro step={step} />
         ) : (
@@ -151,6 +152,10 @@ function Intro({ step }: { step: Step }) {
       </p>
       <EntryView entry={entry} mode="intro" />
       <footer className="learn-actions">
+        <button className="btn btn-ghost familiar-skip" onClick={() => {
+          stopAudio();
+          store.progress((p) => setFamiliar(p, step.id, true));
+        }}>已熟悉，跳过</button>
         <button className="btn btn-primary btn-xl" onClick={next} autoFocus>
           认识了 <ArrowRight size={20} />
         </button>
@@ -611,7 +616,7 @@ function Summary({ session }: { session: ActiveSession }) {
     if (store.get().settings.sfx) void cue("complete");
   }, []);
   const stats = sessionStats(session);
-  const words = [...new Set(session.steps.map((s) => s.id))]
+  const words = Object.keys(session.graded)
     .map((id) => atlas.byId.get(id)!)
     .filter(Boolean);
   const wrong = words.filter((w) => session.graded[w.id] === Rating.Again);
@@ -637,11 +642,11 @@ function Summary({ session }: { session: ActiveSession }) {
       <div className="summary-card">
         <div className="summary-sky">
           <Galaxy mode="mini" highlight={words.map((w) => w.id)} ignite />
-          <p>今天点亮了 {words.length} 颗星</p>
+          <p>{stats.total ? `今天点亮了 ${words.length} 颗星` : "把时间留给还不熟悉的词"}</p>
         </div>
         <p className="eyebrow">这一程结束了</p>
         <h1 className="display">
-          {stats.accuracy >= 90
+          {!stats.total ? "这些词，已经很熟悉了。" : stats.accuracy >= 90
             ? "漂亮的一程。"
             : stats.accuracy >= 60
               ? "稳稳向前。"
@@ -651,19 +656,19 @@ function Summary({ session }: { session: ActiveSession }) {
           <Ring
             value={stats.accuracy / 100}
             size={128}
-            tone={stats.accuracy >= 60 ? "sage" : "terra"}
+            tone={!stats.total || stats.accuracy >= 60 ? "sage" : "terra"}
           >
-            <b>{stats.accuracy}%</b>
-            <small>首次正确</small>
+            <b>{stats.total ? `${stats.accuracy}%` : "—"}</b>
+            <small>{stats.total ? "首次正确" : "本轮未答题"}</small>
           </Ring>
           <dl>
             <div>
               <dt>新词</dt>
-              <dd>{session.newIds.length}</dd>
+              <dd>{session.newIds.filter((id) => id in session.graded).length}</dd>
             </div>
             <div>
               <dt>复习</dt>
-              <dd>{session.reviewIds.length}</dd>
+              <dd>{session.reviewIds.filter((id) => id in session.graded).length}</dd>
             </div>
             <div>
               <dt>用时</dt>
@@ -693,7 +698,8 @@ function Summary({ session }: { session: ActiveSession }) {
           ))}
         </ul>
         <p className="summary-note">
-          FSRS 已为每个词排好下次相遇的时间。答错的词，会更早回来。
+          {stats.total ? "已为答过的词排好下次复习。答错的词，会更早回来。" : "本轮没有增加学习数量，也没有产生正确率。"}
+          {!!session.skippedIds?.length && ` 已跳过 ${session.skippedIds.length} 个熟词，可在图鉴「已熟悉」里恢复。`}
         </p>
         <div className="summary-actions">
           {wrong.length > 0 && (
@@ -701,12 +707,12 @@ function Summary({ session }: { session: ActiveSession }) {
               <RotateCcw size={18} /> 再练 {wrong.length} 个错词
             </button>
           )}
-          <button
+          {stats.total > 0 && <button
             className="btn btn-ghost"
             onClick={() => shareSession(atlas, session)}
           >
             <Share2 size={18} /> 分享成绩卡
-          </button>
+          </button>}
           <button
             className="btn btn-primary btn-xl"
             onClick={done}

@@ -11,13 +11,14 @@ import { Illustration } from "../ui/Illustration";
 import { searchAtlas } from "../ui/Palette";
 import { Speak } from "../ui/Speak";
 
-type Status = "all" | "new" | "learning" | "mastered" | "saved";
+type Status = "all" | "new" | "learning" | "mastered" | "saved" | "familiar";
 const STATUS: [Status, string][] = [
   ["all", "全部"],
   ["new", "未学"],
   ["learning", "学习中"],
   ["mastered", "已掌握"],
   ["saved", "收藏"],
+  ["familiar", "已熟悉"],
 ];
 
 type View = "grid" | "list" | "galaxy";
@@ -38,6 +39,7 @@ export function AtlasPage({
   const atlas = useAtlas();
   const cards = useStore((s) => s.progress.cards);
   const bookmarks = useStore((s) => s.progress.bookmarks);
+  const familiar = useStore((s) => s.progress.familiar);
   const [q, setQ] = useState(route.q ?? "");
   const [status, setStatus] = useState<Status>("all");
   const [view, setViewState] = useState<View>(() =>
@@ -82,13 +84,14 @@ export function AtlasPage({
       if (ti >= 0 && w.topic !== ti) return false;
       if (li >= 0 && w.cefr !== li) return false;
       const c = cards[w.id];
-      if (status === "new") return !c;
+      if (status === "new") return !c && !familiar.includes(w.id);
+      if (status === "familiar") return familiar.includes(w.id);
       if (status === "learning") return !!c && !isMastered(c);
       if (status === "mastered") return isMastered(c);
       if (status === "saved") return saved.has(w.id);
       return true;
     });
-  }, [atlas, q, topic, level, status, cards, bookmarks]);
+  }, [atlas, q, topic, level, status, cards, bookmarks, familiar]);
 
   const setFilter = (patch: Partial<Extract<Route, { page: "atlas" }>>) =>
     go({ page: "atlas", topic, level, view: route.view, ...patch }, null, true);

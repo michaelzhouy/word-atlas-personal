@@ -4,6 +4,7 @@ import { transition } from "./motion";
 export type Route =
   | { page: "today" }
   | { page: "atlas"; topic?: string; level?: string; q?: string; view?: string }
+  | { page: "notebooks"; book?: string; add?: string }
   | { page: "learn" }
   | { page: "practice" }
   | { page: "me" }
@@ -24,6 +25,7 @@ function parse(hash: string): Location {
   if (seg[0] === "atlas")
     route = { page: "atlas", topic: params.get("topic") || undefined, level: params.get("level") || undefined, q: params.get("q") || undefined, view: params.get("view") || undefined };
   else if (seg[0] === "learn") route = { page: "learn" };
+  else if (seg[0] === "notebooks") route = { page: "notebooks", book: params.get("book") || undefined, add: params.get("add") || undefined };
   else if (seg[0] === "practice") route = { page: "practice" };
   else if (seg[0] === "me") route = { page: "me" };
   else if (seg[0] === "about") route = { page: "about" };
@@ -40,6 +42,10 @@ export function href(route: Route, word?: string | null) {
     if (route.view) params.set("view", route.view);
   }
   if (word) params.set("w", word);
+  if (route.page === "notebooks") {
+    if (route.book) params.set("book", route.book);
+    if (route.add) params.set("add", route.add);
+  }
   const q = params.toString();
   return `#/${route.page === "today" ? "" : route.page}${q ? `?${q}` : ""}`;
 }

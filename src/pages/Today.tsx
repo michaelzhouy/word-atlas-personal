@@ -1,10 +1,11 @@
-import { ArrowRight, Flame, Keyboard, Sparkles } from "lucide-react";
+import { ArrowRight, BookMarked, Flame, Keyboard, Sparkles } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { prefetch, useAtlas, useEntry } from "../atlas/context";
 import { go, openWord } from "../lib/router";
 import { cue } from "../lib/sound";
 import { hashSeed } from "../lib/text";
-import { buildSession, masteredCount, todayPlan } from "../store/session";
+import { buildSession, masteredCount, nextNew, todayPlan } from "../store/session";
+import { activeNotebook } from "../store/notebooks";
 import { isMastered } from "../store/srs";
 import { dayKey, store, useStore } from "../store/store";
 import { Galaxy } from "../galaxy/Galaxy";
@@ -52,6 +53,8 @@ export function Today() {
   const total = plan.due.length + plan.fresh.length;
   const goal = settings.dailyNew + Math.min(plan.due.length, 60);
   const doneToday = today?.r ?? 0;
+  const notebook = activeNotebook(progress);
+  const hasMore = nextNew(atlas, progress, settings, 1).length > 0;
 
   const start = (opts?: { reviewOnly?: boolean; extra?: number }) => {
     if (!active) {
@@ -87,6 +90,10 @@ export function Today() {
         </div>
       </header>
 
+      <button className="today-source" onClick={() => go({ page: "notebooks", book: notebook?.id })}>
+        <BookMarked size={19} /><span><small>今日新词来源</small><b>{notebook?.name ?? "完整图鉴"}</b></span><span className="today-source-action">选择词本 <ArrowRight size={16} /></span>
+      </button>
+
       <section className={`journey ${total === 0 && !active ? "is-clear" : ""}`}>
         <img className="journey-art" src={`${BRAND}/hero.webp`} alt="" fetchPriority="high" />
         <div className="journey-body">
@@ -96,7 +103,7 @@ export function Today() {
               <h2>
                 还剩 <b>{active.steps.length - active.index}</b> 步
               </h2>
-              <p className="journey-lede">进度已保存，随时接着走。</p>
+              <p className="journey-lede">进度已保存 · {active.source?.name ?? "完整图鉴"}{(active.source?.id ?? null) !== progress.activeNotebookId ? "（下一轮使用新选择）" : ""}</p>
             </>
           ) : total > 0 ? (
             <>
@@ -118,9 +125,9 @@ export function Today() {
             </>
           ) : (
             <>
-              <p className="eyebrow eyebrow-light">今日已完成</p>
-              <h2>今天的星，都亮了。</h2>
-              <p className="journey-lede">记忆需要一点留白。想多走一段，也可以。</p>
+              <p className="eyebrow eyebrow-light">{!hasMore && notebook ? "词本里暂无新词" : "今日已完成"}</p>
+              <h2>{!hasMore && notebook ? notebook.wordIds.length ? "这本书，先读到这里。" : "把想记住的词放进来。" : "今天的星，都亮了。"}</h2>
+              <p className="journey-lede">{!hasMore && notebook ? "可以添些新词，或换一本。已学的词会在到期时回来复习。" : "记忆需要一点留白。想多走一段，也可以。"}</p>
             </>
           )}
           {teaser.length > 0 && (
@@ -136,11 +143,11 @@ export function Today() {
               <button className="btn btn-primary btn-xl" onClick={() => start()}>
                 {active ? "继续旅程" : "开始今天的旅程"} <ArrowRight size={20} />
               </button>
-            ) : (
+            ) : hasMore ? (
               <button className="btn btn-primary btn-xl" onClick={() => start({ extra: 5 })}>
                 再认识 5 个新词 <Sparkles size={18} />
               </button>
-            )}
+            ) : <button className="btn btn-primary btn-xl" onClick={() => go({ page: "notebooks", book: notebook?.id })}>去词本看看 <ArrowRight size={20} /></button>}
             {!active && plan.due.length > 0 && plan.fresh.length > 0 && (
               <button className="btn btn-glass" onClick={() => start({ reviewOnly: true })}>
                 只复习

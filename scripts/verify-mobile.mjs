@@ -149,11 +149,25 @@ const assertTargets = async (page, scope) => {
     );
   assert.deepEqual(small, [], `${scope}: small touch targets`);
 };
-const shot = (page, name) =>
-  page.screenshot({
+const shot = async (page, name) => {
+  await page.evaluate(async () => {
+    const surface =
+      document.querySelector(".sheet") ?? document.querySelector("main");
+    const images = [...(surface?.querySelectorAll("img") ?? [])].filter(
+      (img) => {
+        const r = img.getBoundingClientRect();
+        return (
+          r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < innerHeight
+        );
+      },
+    );
+    await Promise.all(images.map((img) => img.decode()));
+  });
+  return page.screenshot({
     path: path.join(out, `${name}.png`),
     animations: "disabled",
   });
+};
 
 try {
   for (const [width, height, theme] of [
